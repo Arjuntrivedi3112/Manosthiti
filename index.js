@@ -46,6 +46,40 @@ app.get('/',(req,res)=>{
     res.json({msg:"Welcome, Welcome, Bhale Padhara"});
 })
 
+
+
+app.post('/', async (req, res) => {
+    try {
+        let text = req.body.text + "generate 5 mcq from given text with correct answer only json in object form";
+        let data = await run(text);
+        // const mcq = JSON.parse(data);
+        res.json(data)
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: "false",
+            message: "Server error"
+        });
+    }
+})
+
+
+
+async function run(prompt) {
+    const genAI = new GoogleGenerativeAI(process.env.AIzaSyBRaY73x9TN1kuZu38zkuxO4obbSsSc1fQ);
+
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const result = await model.generateContent(prompt);
+
+    return result.response.text();
+}
+
+
+
+
+
 app.listen(PORT, ()=>{
     console.log("Listing on port 3000...");
 })
