@@ -1,28 +1,31 @@
-const backendUrl = 'https://your-backend-name.vercel.app/chat'; // Replace with your Vercel URL
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('chat-input');
+    const output = document.getElementById('chat-output');
 
-async function sendMessage() {
-    const userInput = document.getElementById('user-input').value;
-    if (userInput.trim() === '') return;
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    // Display user's message
-    const chatBox = document.getElementById('chat-box');
-    chatBox.innerHTML += `<div class="user-message">${userInput}</div>`;
+        const userMessage = input.value;
+        output.innerHTML += `<div>User: ${userMessage}</div>`;
+        input.value = '';
 
-    // Send message to backend
-    try {
-        const response = await fetch(backendUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: userInput }),
-        });
-        const data = await response.json();
-        const botReply = data.reply;
+        try {
+            const response = await fetch('https://your-backend-name.vercel.app/chat', { // Replace with your actual backend URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage }),
+            });
 
-        // Display bot's reply
-        chatBox.innerHTML += `<div class="bot-message">${botReply}</div>`;
-        document.getElementById('user-input').value = '';
-    } catch (error) {
-        console.error('Error:', error);
-        chatBox.innerHTML += `<div class="error-message">Something went wrong. Please try again.</div>`;
-    }
-}
+            const data = await response.json();
+            const botReply = data.reply;
+
+            output.innerHTML += `<div>Bot: ${botReply}</div>`;
+        } catch (error) {
+            console.error('Error:', error);
+            output.innerHTML += `<div>Bot: Sorry, something went wrong.</div>`;
+        }
+    });
+});
