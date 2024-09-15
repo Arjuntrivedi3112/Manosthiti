@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('https://manosthiti.vercel.app/gemini', { // Replace with your actual backend URL
     method: 'POST',
-    body: JSON.stringify({ txt: "userMessage" })
+    body: JSON.stringify({ txt: userMessage })
 });
             });
 
