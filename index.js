@@ -1,90 +1,25 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const app = express();
-// const db = require('./Database/db');
-// const router = express.Router();
-// const model = require('./Models/user')
-const cors = require("cors");
-const PORT = process.env.PORT || 3000;
+async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const responseDiv = document.getElementById('response');
+    const userMessage = messageInput.value;
 
-
-// const youtube_search = require('./Routes/youtube_search')
-// const video_description = require('./Routes/video_description')
-// const video_growth = require('./Routes/video_growth')
-// const mp4_to_text = require('./Routes/mp4_to_text')
-// const generate_pdf = require('./generate_pdf')
-// const user = require('./Routes/users')
-// const pdf = require('./Routes/addPdf')
-// const appp = require('./app')
-// const mcq = require('./Routes/generate_mcq')
-// const chat = require('./Routes/question_answer')
-// const dash = require('./Routes/student_dashboard')
-// const bibtex = require('./Routes/get_letex')
-// const analysis = require('./Routes/student_analysis')
-
-
-app.use(cors());
-
-// app.use("/files", express.static("files"))
-// app.use(bodyParser.json());
-// app.use('/youtube',youtube_search);
-// app.use('/video',video_description);
-// app.use('/growth',video_growth);
-// app.use('/',generate_pdf);
-// app.use('/',mp4_to_text);
-// app.use('/user',user); 
-// app.use('/pdf',pdf);
-// app.use('/backend',appp); 
-// app.use('/mcq',mcq); 
-// app.use('/chat',chat);
-// app.use('/dashboard',dash); 
-// app.use('/bibtex',bibtex); 
-// app.use('/analysis',analysis); 
-
-
-app.get('/',(req,res)=>{
-    res.json({msg:"Welcome, Welcome, Bhale Padhara"});
-})
-
-
-
-app.post('/gemini', async (req, res) => {
     try {
-        let text = req.body.text
-        let data = await run(text);
-        // const mcq = JSON.parse(data);
-        res.json(data)
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            success: "false",
-            message: "Server error"
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userMessage })
         });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        responseDiv.innerText = data.reply;
+    } catch (error) {
+        console.error('Error:', error);
+        responseDiv.innerText = 'Error occurred. Please try again.';
     }
-})
-
-
-
-async function run(prompt) {
-    const genAI = new GoogleGenerativeAI("AIzaSyBRaY73x9TN1kuZu38zkuxO4obbSsSc1fQ");
-
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
-
-    const result = await model.generateContent(prompt);
-
-    return result.response.text();
 }
-
-
-
-
-
-app.listen(PORT, ()=>{
-    console.log("Listing on port 3000...");
-})
-
-
-app.get('/hello',(req,res)=>{
-    res.json({msg:"Welcome, Welcome, Bhale Padhara"});
-})
