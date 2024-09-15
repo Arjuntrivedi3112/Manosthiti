@@ -1,3 +1,4 @@
+// Frontend JavaScript
 async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
     const responseDiv = document.getElementById('response');
@@ -7,9 +8,9 @@ async function sendMessage() {
         const response = await fetch('/chat', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message: userMessage })
+            body: JSON.stringify({ message: userMessage }),
         });
 
         if (!response.ok) {
