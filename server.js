@@ -1,48 +1,51 @@
 const express = require('express');
-const fetch = require('node-fetch');
+const cors = require('cors');
+const { GoogleGenerativeAI } = require('google-generative-ai'); // Ensure this module is installed
+require('dotenv').config(); // For environment variables
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(cors());
+app.use(express.json()); // Parse JSON bodies
 
+// Welcome route
+app.get('/', (req, res) => {
+    res.json({ msg: "Welcome, Welcome, Bhale Padhara" });
+});
+
+// Chat route for Gemini API
 app.post('/chat', async (req, res) => {
-    const userMessage = req.body.message;
-    console.log('Received message:', userMessage); // Debugging log
-
     try {
-        const openaiApiKey = process.env.sk-2OMljlr-3QxpYPKtyVm91H6kQVLmljRGm4hHyzEQy6T3BlbkFJfa9c_2_vGdJFzQio4RoihcxrCeErFscsVvbPajBJMA;
-        if (!openaiApiKey) {
-            throw new Error('API key is missing');
-        }
+        const userMessage = req.body.message;
+        const prompt = `${userMessage} generate 5 MCQs with correct answers in JSON format`;
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${openaiApiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: 'gpt-4',
-                messages: [{ role: 'user', content: userMessage }],
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`OpenAI API request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Response from OpenAI:', data); // Debugging log
-
-        const botReply = data.choices[0].message.content;
-        res.json({ reply: botReply });
+        // Call the run function with the prompt
+        let data = await run(prompt);
+        
+        // Send the result back
+        res.json({ reply: data });
     } catch (error) {
-        console.error('Error calling OpenAI API:', error);
-        res.status(500).json({ error: 'Something went wrong!' });
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
+// Function to interact with the Gemini API
+async function run(prompt) {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Make sure to set this variable in Vercel
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+    try {
+        const result = await model.generateContent(prompt);
+        return result.response.text(); // Adjust based on the actual API response format
+    } catch (error) {
+        console.error('Error with Gemini API:', error);
+        throw new Error('Error with Gemini API');
+    }
+}
+
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Listening on port ${PORT}...`);
 });
