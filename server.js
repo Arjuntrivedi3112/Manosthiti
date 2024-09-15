@@ -1,8 +1,10 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const app = express();
+require('dotenv').config(); // To use .env file
 
 app.use(express.json());
+app.use(express.static('public')); // Serve static files from 'public' folder
 
 // Endpoint to handle chat requests
 app.post('/chat', async (req, res) => {
