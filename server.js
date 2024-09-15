@@ -9,7 +9,7 @@ app.post('/chat', async (req, res) => {
     console.log('Received message:', userMessage); // Debugging log
 
     try {
-        const openaiApiKey = process.env.sk-2OMljlr-3QxpYPKtyVm91H6kQVLmljRGm4hHyzEQy6T3BlbkFJfa9c_2_vGdJFzQio4RoihcxrCeErFscsVvbPajBJMA;
+        const openaiApiKey = process.env.OPENAI_API_KEY;
         if (!openaiApiKey) {
             throw new Error('API key is missing');
         }
