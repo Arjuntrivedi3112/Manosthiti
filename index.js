@@ -9,11 +9,17 @@ app.post('/chat', async (req, res) => {
     console.log('Received message:', userMessage); // Debugging log
 
     try {
+        // Ensure the API key is properly retrieved
+        const openaiApiKey = process.env.OPENAI_API_KEY;
+        if (!openaiApiKey) {
+            throw new Error('API key is missing');
+        }
+
         // Call OpenAI API
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`, // Use environment variable for security
+                'Authorization': `Bearer ${openaiApiKey}`, // Use environment variable for security
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -21,6 +27,10 @@ app.post('/chat', async (req, res) => {
                 messages: [{ role: 'user', content: userMessage }],
             }),
         });
+
+        if (!response.ok) {
+            throw new Error(`OpenAI API request failed with status ${response.status}`);
+        }
 
         const data = await response.json();
         console.log('Response from OpenAI:', data); // Debugging log
@@ -37,7 +47,4 @@ app.post('/chat', async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+const PORT = pro
