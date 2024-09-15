@@ -11,7 +11,7 @@ app.post('/chat', async (req, res) => {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`, // Environment variable in Vercel
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`, // Use environment variable for API key
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
