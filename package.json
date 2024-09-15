@@ -1,7 +1,7 @@
 {
-  "name": "mental-health-bot-backend",
+  "name": "mental-health-chat-backend",
   "version": "1.0.0",
-  "description": "A Node.js backend for mental health chat bot using ChatGPT API.",
+  "description": "Node.js backend for mental health chat bot using ChatGPT API.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
