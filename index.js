@@ -1,57 +1,90 @@
+const bodyParser = require('body-parser');
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser'); // Not used, can be removed if not required
-const { GoogleGenerativeAI } = require('google-generative-ai'); // Ensure this module is installed
-require('dotenv').config(); // Ensure to use dotenv to manage environment variables
-
 const app = express();
+// const db = require('./Database/db');
+// const router = express.Router();
+// const model = require('./Models/user')
+const cors = require("cors");
 const PORT = process.env.PORT || 3000;
 
+
+// const youtube_search = require('./Routes/youtube_search')
+// const video_description = require('./Routes/video_description')
+// const video_growth = require('./Routes/video_growth')
+// const mp4_to_text = require('./Routes/mp4_to_text')
+// const generate_pdf = require('./generate_pdf')
+// const user = require('./Routes/users')
+// const pdf = require('./Routes/addPdf')
+// const appp = require('./app')
+// const mcq = require('./Routes/generate_mcq')
+// const chat = require('./Routes/question_answer')
+// const dash = require('./Routes/student_dashboard')
+// const bibtex = require('./Routes/get_letex')
+// const analysis = require('./Routes/student_analysis')
+
+
 app.use(cors());
-app.use(express.json()); // Parse JSON bodies
 
-// Welcome route
-app.get('/', (req, res) => {
-    res.json({ msg: "Welcome, Welcome, Bhale Padhara" });
-});
+// app.use("/files", express.static("files"))
+// app.use(bodyParser.json());
+// app.use('/youtube',youtube_search);
+// app.use('/video',video_description);
+// app.use('/growth',video_growth);
+// app.use('/',generate_pdf);
+// app.use('/',mp4_to_text);
+// app.use('/user',user); 
+// app.use('/pdf',pdf);
+// app.use('/backend',appp); 
+// app.use('/mcq',mcq); 
+// app.use('/chat',chat);
+// app.use('/dashboard',dash); 
+// app.use('/bibtex',bibtex); 
+// app.use('/analysis',analysis); 
 
-// Main chat route
-app.post('/chat', async (req, res) => {
+
+app.get('/',(req,res)=>{
+    res.json({msg:"Welcome, Welcome, Bhale Padhara"});
+})
+
+
+
+app.post('/gemini', async (req, res) => {
     try {
-        const userMessage = req.body.message;
-        const prompt = `${userMessage} generate 5 MCQs with correct answers in JSON format`;
-        
-        // Call the run function with the prompt
-        let data = await run(prompt);
-        
-        // Send the result back
-        res.json({ reply: data });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
+        let text = req.body.text
+        let data = await run(text);
+        // const mcq = JSON.parse(data);
+        res.json(data)
 
-// Function to interact with the Gemini API
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: "false",
+            message: "Server error"
+        });
+    }
+})
+
+
+
 async function run(prompt) {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Make sure to use the correct environment variable
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const genAI = new GoogleGenerativeAI("AIzaSyBRaY73x9TN1kuZu38zkuxO4obbSsSc1fQ");
 
-    try {
-        const result = await model.generateContent(prompt);
-        return result.response.text(); // Adjust based on the actual API response format
-    } catch (error) {
-        console.error('Error with Gemini API:', error);
-        throw new Error('Error with Gemini API');
-    }
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+
+    const result = await model.generateContent(prompt);
+
+    return result.response.text();
 }
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}...`);
-});
 
-// Additional route for testing
-app.get('/hello', (req, res) => {
-    res.json({ msg: "Welcome, Welcome, Bhale Padhara" });
-});
+
+
+
+app.listen(PORT, ()=>{
+    console.log("Listing on port 3000...");
+})
+
+
+app.get('/hello',(req,res)=>{
+    res.json({msg:"Welcome, Welcome, Bhale Padhara"});
+})
