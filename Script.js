@@ -1,29 +1,25 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('chat-input');
-    const output = document.getElementById('chat-output');
+async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const responseDiv = document.getElementById('response');
+    const userMessage = messageInput.value;
 
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
+    try {
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userMessage })
+        });
 
-        const userMessage = input.value;
-        output.innerHTML += `<div>User: ${userMessage}</div>`;
-        input.value = '';
-
-        try {
-            const response = await fetch('https://manosthiti.vercel.app/gemini', { // Replace with your actual backend URL
-    method: 'POST',
-    body: JSON.stringify({ txt: userMessage })
-});
-            });
-
-            const data = await response.json();
-            const botReply = data.reply;
-
-            output.innerHTML += `<div>Bot: ${botReply}</div>`;
-        } catch (error) {
-            console.error('Error:', error);
-            output.innerHTML += `<div>Bot: Sorry, something went wrong.</div>`;
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    });
-});
+
+        const data = await response.json();
+        responseDiv.innerText = data.reply;
+    } catch (error) {
+        console.error('Error:', error);
+        responseDiv.innerText = 'Error occurred. Please try again.';
+    }
+}
