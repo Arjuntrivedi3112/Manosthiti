@@ -1,26 +1,28 @@
+const backendUrl = 'https://your-backend-name.vercel.app/chat'; // Replace with your Vercel URL
 
-
-const backendUrl = 'https://vercel.com/arjun-trivedis-projects/manosthiti/y6jntsojmxu4cMCbwoFXY6T1RSNk'; // Replace this with your actual Vercel URL
-
-document.getElementById('send-btn').addEventListener('click', async function () {
+async function sendMessage() {
     const userInput = document.getElementById('user-input').value;
-    document.getElementById('chat-box').innerHTML += `<p>You: ${userInput}</p>`;
+    if (userInput.trim() === '') return;
 
-    // Clear the input field
-    document.getElementById('user-input').value = '';
+    // Display user's message
+    const chatBox = document.getElementById('chat-box');
+    chatBox.innerHTML += `<div class="user-message">${userInput}</div>`;
 
-    // Send the message to your backend (on Vercel)
-    const response = await fetch(backendUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userInput }),
-    });
+    // Send message to backend
+    try {
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userInput }),
+        });
+        const data = await response.json();
+        const botReply = data.reply;
 
-    const data = await response.json();
-    const botReply = data.reply;
-
-    // Show bot's reply in the chatbox
-    document.getElementById('chat-box').innerHTML += `<p>Bot: ${botReply}</p>`;
-});
+        // Display bot's reply
+        chatBox.innerHTML += `<div class="bot-message">${botReply}</div>`;
+        document.getElementById('user-input').value = '';
+    } catch (error) {
+        console.error('Error:', error);
+        chatBox.innerHTML += `<div class="error-message">Something went wrong. Please try again.</div>`;
+    }
+}
