@@ -12,6 +12,10 @@ async function sendMessage() {
             body: JSON.stringify({ message: userMessage })
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const data = await response.json();
         responseDiv.innerText = data.reply;
     } catch (error) {
