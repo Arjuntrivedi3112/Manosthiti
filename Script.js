@@ -11,12 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = '';
 
         try {
-            const response = await fetch('https://your-backend-name.vercel.app/chat', { // Replace with your actual backend URL
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: userMessage }),
+            const response = await fetch('https://manosthiti.vercel.app/gemini', { // Replace with your actual backend URL
+    method: 'POST',
+    body: JSON.stringify({ txt: "userMessage" })
+});
             });
 
             const data = await response.json();
