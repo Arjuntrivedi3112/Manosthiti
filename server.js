@@ -6,7 +6,7 @@ app.use(express.json());
 
 app.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
-    
+
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -20,8 +20,13 @@ app.post('/chat', async (req, res) => {
             }),
         });
 
+        if (!response.ok) {
+            throw new Error(`API response error: ${response.statusText}`);
+        }
+
         const data = await response.json();
         const botReply = data.choices[0].message.content;
+
         res.json({ reply: botReply });
     } catch (error) {
         console.error('Error calling OpenAI API:', error);
