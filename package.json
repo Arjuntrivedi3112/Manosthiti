@@ -1,4 +1,19 @@
-"@google/generative-ai": "^0.17.1",
+{
+  "name": "server.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git"
+    
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.17.1",
     "@nlpjs/core": "^4.26.1",
     "@nlpjs/lang-en": "^4.26.1",
     "@nlpjs/nlp": "^4.27.0",
@@ -36,3 +51,5 @@
     "youtube-search-api": "^1.2.2",
     "youtube-transcript": "^1.2.1",
     "ytdl-core": "^4.11.5"
+  }
+}
