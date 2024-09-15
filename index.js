@@ -69,7 +69,7 @@ app.post('/', async (req, res) => {
 async function run(prompt) {
     const genAI = new GoogleGenerativeAI(process.env.AIzaSyBRaY73x9TN1kuZu38zkuxO4obbSsSc1fQ);
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" }):
 
     const result = await model.generateContent(prompt);
 
