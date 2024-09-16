@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // Serve static files (like index.html, script.js, style.css)
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "root")));
 
 // API endpoint
 app.post("/api/chat", async (req, res) => {
