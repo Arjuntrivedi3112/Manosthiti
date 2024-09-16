@@ -1,10 +1,10 @@
 {
   "name": "mental-health-chatbot",
   "version": "1.0.0",
-  "description": "A simple chatbot for mental health using OpenAI GPT",
   "main": "serve.js",
   "scripts": {
-    "start": "node serve.js"
+    "start": "node serve.js",
+    "build": "echo 'Build script not needed'"
   },
   "dependencies": {
     "express": "^4.18.2",
