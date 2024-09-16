@@ -1,15 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const fetch = require("node-fetch");
 const path = require("path");
+const fetch = require("node-fetch");
 
 const app = express();
-app.use(bodyParser.json()); // To handle JSON request bodies
+app.use(bodyParser.json());
+app.use(express.static(__dirname)); // Serve static files from the root directory
 
-// Serve static files directly from the root directory
-app.use(express.static(__dirname));
-
-// API endpoint for handling chat requests
+// Handle chat requests
 app.post("/api/chat", async (req, res) => {
     const userMessage = req.body.message;
 
@@ -26,7 +24,6 @@ app.post("/api/chat", async (req, res) => {
     }
 });
 
-// Helper function to interact with OpenAI API
 async function getAIResponse(message) {
     const apiKey = process.env.OPENAI_API_KEY;
 
@@ -50,12 +47,11 @@ async function getAIResponse(message) {
     return data.choices[0].message.content;
 }
 
-// Fallback route to serve index.html from the root directory for any unmatched routes
+// Fallback to index.html
 app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Start the server on port 3000 or the port specified by the environment
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
