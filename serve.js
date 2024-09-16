@@ -11,10 +11,16 @@ app.use(express.static(__dirname)); // This will serve files like index.html, sc
 
 // API endpoint to handle chat requests
 app.post("/api/chat", async (req, res) => {
-  const userMessage = req.body.message;
-  const openaiResponse = await getAIResponse(userMessage);
-  res.json({ reply: openaiResponse });
+    const userMessage = req.body.message;
+
+    if (!userMessage) {
+        return res.status(400).json({ error: "Message is required." });
+    }
+
+    const openaiResponse = await getAIResponse(userMessage);
+    res.json({ reply: openaiResponse });
 });
+
 
 async function getAIResponse(message) {
   const apiKey = process.env.OPENAI_API_KEY;
