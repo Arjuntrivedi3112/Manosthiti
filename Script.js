@@ -1,31 +1,44 @@
-document.getElementById('chat-form').addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent form from reloading the page
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+    const input = document.querySelector('input');
+    const messages = document.querySelector('#messages'); 
 
-    const userInput = document.getElementById('user-input').value;
-    if (!userInput) return; // Don't send empty messages
-
-    // Display the user's message in the chatbox
-    const chatBox = document.getElementById('chat-box');
-    const userMessageElement = document.createElement('p');
-    userMessageElement.textContent = `You: ${userInput}`;
-    chatBox.appendChild(userMessageElement);
-
-    // Send the message to the backend (Node.js server)
-    try {
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: userInput })
-        });
-
-        const data = await response.json();
-        const botMessageElement = document.createElement('p');
-        botMessageElement.textContent = `Bot: ${data.reply}`;
-        chatBox.appendChild(botMessageElement);
-    } catch (error) {
-        console.error('Error communicating with the server:', error);
+    if (!messages) {
+        console.error('Element with ID "messages" not found');
+        return;
     }
 
-    // Clear the input field after sending the message
-    document.getElementById('user-input').value = '';
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const userMessage = input.value;
+        input.value = '';
+
+        if (!userMessage.trim()) {
+            return;
+        }
+
+        messages.innerHTML += `<p>User: ${userMessage}</p>`;
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            const aiReply = data.reply;
+
+            messages.innerHTML += `<p>AI: ${aiReply}</p>`;
+        } catch (error) {
+            console.error('Error communicating with the server:', error);
+            messages.innerHTML += `<p>Error: Unable to get a response from the server.</p>`;
+        }
+    });
 });
