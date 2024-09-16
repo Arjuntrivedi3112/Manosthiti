@@ -6,10 +6,10 @@ const path = require("path");
 const app = express();
 app.use(bodyParser.json());
 
-// Serve static files (like index.html, script.js, style.css)
-app.use(express.static(path.join(__dirname, "root")));
+// Serve static files from the root directory
+app.use(express.static(__dirname)); // This will serve files like index.html, script.js, and style.css from the root folder
 
-// API endpoint
+// API endpoint to handle chat requests
 app.post("/api/chat", async (req, res) => {
   const userMessage = req.body.message;
   const openaiResponse = await getAIResponse(userMessage);
@@ -33,9 +33,9 @@ async function getAIResponse(message) {
   return data.choices[0].message.content;
 }
 
-// Fallback for serving index.html for any route not matched
+// Fallback to serve index.html for unknown routes
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "index.html")); // Serve index.html from root directory
 });
 
 const PORT = process.env.PORT || 3000;
