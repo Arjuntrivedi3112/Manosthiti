@@ -1,57 +1,45 @@
+// server.js
 const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
+const cors = require('cors');
+require('dotenv').config(); // Load .env variables
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '/')));
+app.use(cors());
+app.use(express.json());
 
-app.post('/api/chat', async (req, res) => {
+app.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
 
-    if (!userMessage) {
-        return res.status(400).json({ error: 'Message is required.' });
-    }
-
     try {
-        const reply = await getAIResponse(userMessage);
-        res.json({ reply });
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: 'gpt-4', // Ensure your OpenAI account supports this model
+                messages: [{ role: 'user', content: userMessage }],
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.choices && data.choices.length > 0) {
+            const botReply = data.choices[0].message.content;
+            res.json({ reply: botReply });
+        } else {
+            res.status(500).json({ error: 'No response from AI' });
+        }
     } catch (error) {
-        console.error('Error communicating with OpenAI:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error fetching from OpenAI:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
-async function getAIResponse(message) {
-    const apiKey = process.env.OPENAI_API_KEY;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: message }],
-        }),
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch response from OpenAI API');
-    }
-
-    const data = await response.json();
-    return data.choices[0].message.content;
-}
-
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
